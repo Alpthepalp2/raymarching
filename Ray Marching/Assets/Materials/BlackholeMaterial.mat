@@ -28,7 +28,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CubeMap:
-        m_Texture: {fileID: 8900000, guid: a469fa04e6f3e8945b5e367c00cc358d, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -70,7 +70,7 @@ Material:
     - _AnisotropyForward: 0.6
     - _BumpScale: 1
     - _Cutoff: 0.5
-    - _Density: 2
+    - _Density: 3
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _ExponentialFactor: 1
@@ -84,11 +84,11 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ShadowStepSize: 0.09
+    - _ShadowStepSize: 0.13
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _StepSize: 2.35
+    - _StepSize: 5.73
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:

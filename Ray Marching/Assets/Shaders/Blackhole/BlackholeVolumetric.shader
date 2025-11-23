@@ -210,7 +210,7 @@ Shader "Unlit/BlackholeVolumetric"
 
                         float  tRad = saturate((r - _Cylinder.x) / (_Cylinder.y - _Cylinder));
                         float3 hotColor  = float3(2.0, 2.0, 2.0);
-                        float3 sampleColor = hotColor * (1-tRad) + (float3(3, 6, 12) * 2); // Blue
+                        float3 sampleColor = hotColor * (1-tRad) + (float3(30, 20, 5)); // Yellowish shiny white
                         
 
                         float saturation = pow(1.0 - tRad, _LightFalloff);

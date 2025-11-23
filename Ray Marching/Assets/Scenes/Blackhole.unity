@@ -136,7 +136,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 1
   m_IsActive: 1
 --- !u!23 &426587001
 MeshRenderer:
@@ -219,9 +219,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   container: {fileID: 426587003}
-  _stepSize: 2.35
+  _stepSize: 5.73
   _maxIterations: 200
-  _shadowStepSize: 0.09
+  _shadowStepSize: 0.13
   _maxShadowIterations: 32
   _accuracy: 10
   _blueNoiseTexture: {fileID: 2800000, guid: b0df9c4abe70fa143b0203a5a0a31264, type: 3}
@@ -232,7 +232,7 @@ MonoBehaviour:
   _cylinderColor: {r: 1, g: 1, b: 1, a: 0}
   _blackHoleMass: 20
   _skyboxCubemap: {fileID: 8900000, guid: a469fa04e6f3e8945b5e367c00cc358d, type: 3}
-  _density: 2
+  _density: 3
   _exponentialFactor: 1
   _anisotropyForward: 0.6
   _anisotropyBackward: -0.2
@@ -266,9 +266,6 @@ GameObject:
   - component: {fileID: 637502411}
   - component: {fileID: 637502412}
   - component: {fileID: 637502413}
-  - component: {fileID: 637502414}
-  - component: {fileID: 637502415}
-  - component: {fileID: 637502417}
   - component: {fileID: 637502418}
   m_Layer: 6
   m_Name: Main Camera
@@ -295,7 +292,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0.5882353}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -345,7 +342,7 @@ Transform:
   m_GameObject: {fileID: 637502407}
   serializedVersion: 2
   m_LocalRotation: {x: 0.013486236, y: -0, z: -0, w: 0.9999091}
-  m_LocalPosition: {x: 0, y: 15, z: -254}
+  m_LocalPosition: {x: 0, y: 17.14, z: -300}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -358,13 +355,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 637502407}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2574adc723d185f4f904c4bfd77f68a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 0.4
-  fastSpeedMultiplier: 3
+  fastSpeedMultiplier: 100
   mouseSensitivity: 0.1
 --- !u!114 &637502412
 MonoBehaviour:
@@ -383,8 +380,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   stopNaNPropagation: 1
-  finalBlitToCameraTarget: 0
-  antialiasingMode: 0
+  finalBlitToCameraTarget: 1
+  antialiasingMode: 2
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25
@@ -439,66 +436,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resolution: {x: 256, y: 64, z: 256}
-  texture: {fileID: 2050193224}
+  texture: {fileID: 1516477168}
   shader: {fileID: 7200000, guid: f6f8b7bf8d1f8fd4aaf3766d27b59b09, type: 3}
-  _scale: 8
+  _scale: 12.6
   _boost: 11.1
-  _octaves: 6
-  _tileSize: 8
+  _octaves: 5
+  _tileSize: 32
   _swirlStrength: 30.6
   _verticalScale: 22.54
   _maxRadius: 0.8
-  _slice: 0.109
+  _slice: 0.179
   _debugPreview: 0
-  _debugSize: 3.3
---- !u!114 &637502414
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 637502407}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a0cfcd67c87a1d49bd96fa32b89da35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pathPoints:
-  - position: {x: 139, y: -15.4, z: -320.3}
-    eulerRotation: {x: 358.965, y: 0, z: 0}
-    roll: 0
-  - position: {x: 42.2, y: -15.4, z: -320.3}
-    eulerRotation: {x: 358.965, y: 0, z: -45}
-    roll: 0
-  - position: {x: 42.2, y: -15.4, z: -320.3}
-    eulerRotation: {x: 358.965, y: 0, z: 45}
-    roll: 0
-  - position: {x: 42.2, y: -15.4, z: -320.3}
-    eulerRotation: {x: 358.965, y: 0, z: 45}
-    roll: 0
-  triggerKey: 1
-  alwaysLookAtOrigin: 0
-  speed: 6
---- !u!114 &637502415
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 637502407}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f77609d56dc4c9d4e8a2d2017c5aa087, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  triggerKey: 1
-  speed: 0.02
-  startRadius: 24.5
-  decayRate: 0.5
-  totalTurns: 5
-  totalFallDistance: 20
-  alwaysLookAtOrigin: 1
-  tiltAngle: 89
+  _debugSize: 1.44
 --- !u!114 &637502416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -511,11 +460,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b99db6bcafebdb747a951384e9124f23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  triggerKey: 1
+  triggerKey: 15
   fovA: 30
   fovB: 15
   lerpSpeed: 0.3
---- !u!114 &637502417
+--- !u!114 &637502418
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -524,31 +473,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 637502407}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c57b6b274df1d0747920abe0ba724b91, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &637502418
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 637502407}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 653a2809bd9521d4499539af6a559605, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathPoints:
-  - {x: 0, y: 30, z: -300}
-  - {x: 0, y: 30, z: 0}
-  - {x: 0, y: 0, z: 28}
-  - {x: 0, y: -26, z: 0}
-  - {x: 0, y: 0, z: -24}
-  - {x: 0, y: 22, z: 0}
+  keyframes:
+  - position: {x: 400, y: 150, z: 600}
+    lookAtOffset: {x: 0, y: 0, z: 0}
+    duration: 15
+  - position: {x: 250, y: 75, z: 350}
+    lookAtOffset: {x: 0, y: 0, z: 0}
+    duration: 12
+  - position: {x: 100, y: 20, z: 150}
+    lookAtOffset: {x: 0, y: -5, z: 0}
+    duration: 10
+  - position: {x: -120, y: 15, z: 80}
+    lookAtOffset: {x: 0, y: -7, z: 0}
+    duration: 12
+  - position: {x: -50, y: 10, z: -100}
+    lookAtOffset: {x: 0, y: -3, z: 0}
+    duration: 10
+  - position: {x: 80, y: 10, z: -50}
+    lookAtOffset: {x: 0, y: -5, z: 0}
+    duration: 8
+  - position: {x: 300, y: 100, z: -400}
+    lookAtOffset: {x: 0, y: 0, z: 0}
+    duration: 15
+  - position: {x: 400, y: 150, z: 600}
+    lookAtOffset: {x: 0, y: 0, z: 0}
+    duration: 15
   triggerKey: 1
-  speed: 5
   sphereCenter: {x: 0, y: 0, z: 0}
+  loopPath: 1
 --- !u!1 &711494757
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,7 +553,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &2050193224
+--- !u!84 &1516477168
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

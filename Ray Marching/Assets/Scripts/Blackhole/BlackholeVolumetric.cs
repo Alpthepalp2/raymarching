@@ -40,9 +40,9 @@ public class BlackholeVolumetric : MonoBehaviour
     [Range(-1.0f, 1.0f)] public float _anisotropyForward;
     [Range(-1.0f, 1.0f)] public float _anisotropyBackward;
     [Range(-1.0f, 1.0f)] public float _lobeWeight;
-    public float _cloudBrightness;
+    public float _cloudBrightness = 2.0f;
     public float _whiteBoost;
-    public float _lightIntensity;
+    public float _lightIntensity = 2.0f;
     public float _rotationSpeed;
     public float _baseRotationSpeed;
     public float _initialRotation;

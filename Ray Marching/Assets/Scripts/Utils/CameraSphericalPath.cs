@@ -2,109 +2,182 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
+[System.Serializable]
+public struct CameraKeyframe
+{
+    public Vector3 position;
+    public Vector3 lookAtOffset; // Offset from sphereCenter to look at
+    public float duration;       // Time in seconds to reach this keyframe from the previous one
+}
+
 public class CameraSphericalPath : MonoBehaviour
 {
-    [Tooltip("World-space positions the camera should move through.")]
-    public List<Vector3> pathPoints = new List<Vector3>();
+    public List<CameraKeyframe> keyframes = new List<CameraKeyframe>();
 
     public Key triggerKey = Key.Space;
-    public float speed = 5f; // world units per second
     public Vector3 sphereCenter = Vector3.zero;
+    public bool loopPath = true; // Added loop option
 
-    private List<float> segmentLengths = new List<float>();
-    private float totalLength;
-    private float distanceTraveled;
+    private int currentKeyframeIndex;
+    private float segmentTime; // Time elapsed in the current keyframe segment
     private bool isMoving;
+
+    void Reset()
+    {
+        // Set a default sphereCenter, assuming the black hole is at or near the origin
+        sphereCenter = Vector3.zero; 
+
+        // Clear existing keyframes
+        keyframes.Clear();
+
+        // Add default keyframes for cinematic movement
+        // Phase 1: Swoop in from afar, maintaining relatively straight pitch
+        // Keyframe 1: Very far, high up, slightly to the side, looking at center
+        keyframes.Add(new CameraKeyframe
+        {
+            position = new Vector3(400f, 150f, 600f),
+            lookAtOffset = new Vector3(0f, 0f, 0f), // Looking directly at center (straight pitch from afar)
+            duration = 15f 
+        });
+
+        // Keyframe 2: Approaching, descending, still far, pitch straight
+        keyframes.Add(new CameraKeyframe
+        {
+            position = new Vector3(250f, 75f, 350f),
+            lookAtOffset = new Vector3(0f, 0f, 0f), // Maintain straight pitch
+            duration = 12f 
+        });
+
+        // Phase 2: Go towards black hole level, circle rings at an angle
+        // Keyframe 3: Closer, almost at ring level, starting angled circle, subtle pitch
+        keyframes.Add(new CameraKeyframe
+        {
+            position = new Vector3(100f, 20f, 150f), // Closer, near ring plane (assuming Y=0 is ring plane)
+            lookAtOffset = new Vector3(0f, -5f, 0f), // Look slightly down into the ring
+            duration = 10f 
+        });
+
+        // Keyframe 4: Circling rings, more to the side, maintaining angle
+        keyframes.Add(new CameraKeyframe
+        {
+            position = new Vector3(-120f, 15f, 80f), // Orbiting
+            lookAtOffset = new Vector3(0f, -7f, 0f), // Maintain look into ring
+            duration = 12f 
+        });
+
+        // Keyframe 5: Continue circling, from another angle, slightly closer
+        keyframes.Add(new CameraKeyframe
+        {
+            position = new Vector3(-50f, 10f, -100f), // Orbiting
+            lookAtOffset = new Vector3(0f, -3f, 0f), // Slight adjustment
+            duration = 10f 
+        });
+        
+        // Keyframe 6: Final close approach before swooping out
+        keyframes.Add(new CameraKeyframe
+        {
+            position = new Vector3(80f, 10f, -50f), // Orbiting
+            lookAtOffset = new Vector3(0f, -5f, 0f), // Look into ring
+            duration = 8f 
+        });
+
+        // Phase 3: Zoom out, ascending, pitch straight
+        // Keyframe 7: Moving away, ascending, straightening pitch
+        keyframes.Add(new CameraKeyframe
+        {
+            position = new Vector3(300f, 100f, -400f),
+            lookAtOffset = new Vector3(0f, 0f, 0f), // Straightening pitch
+            duration = 15f 
+        });
+
+        // Keyframe 8 (Loop back to start): Return to the initial very far position
+        keyframes.Add(new CameraKeyframe
+        {
+            position = new Vector3(400f, 150f, 600f),
+            lookAtOffset = new Vector3(0f, 0f, 0f), // Straight pitch
+            duration = 15f 
+        });
+
+        // Ensure looping by default
+        loopPath = true;
+    }
 
     void Start()
     {
-        if (pathPoints.Count >= 2)
-            PrecomputeSegmentLengths();
+        if (keyframes.Count >= 2)
+        {
+            currentKeyframeIndex = 0;
+            segmentTime = 0f;
+            // No longer need to precompute segment lengths
+        }
     }
 
     void Update()
     {
-        if (Keyboard.current[triggerKey].wasPressedThisFrame && pathPoints.Count >= 2)
+        if (Keyboard.current[triggerKey].wasPressedThisFrame && keyframes.Count >= 2)
         {
-            distanceTraveled = 0f;
+            currentKeyframeIndex = 0;
+            segmentTime = 0f;
             isMoving = true;
         }
 
-        if (!isMoving) return;
+        if (!isMoving || keyframes.Count < 2) return;
 
-        distanceTraveled += speed * Time.deltaTime;
+        CameraKeyframe currentKeyframe = keyframes[currentKeyframeIndex];
+        CameraKeyframe nextKeyframe = keyframes[(currentKeyframeIndex + 1) % keyframes.Count];
 
-        if (distanceTraveled >= totalLength)
+        segmentTime += Time.deltaTime;
+
+        float normalizedTime = segmentTime / nextKeyframe.duration;
+
+        if (normalizedTime >= 1f)
         {
-            distanceTraveled = totalLength;
-            isMoving = false;
-        }
-
-        // Find which segment we are in
-        float traveled = 0f;
-        int seg = 0;
-        while (seg < segmentLengths.Count &&
-               traveled + segmentLengths[seg] < distanceTraveled)
-        {
-            traveled += segmentLengths[seg];
-            seg++;
-        }
-        if (seg >= segmentLengths.Count) seg = segmentLengths.Count - 1;
-
-        float localT = (distanceTraveled - traveled) / segmentLengths[seg];
-
-        // Get start and end positions (relative to sphere center)
-        Vector3 start = pathPoints[seg] - sphereCenter;
-        Vector3 end = pathPoints[seg + 1] - sphereCenter;
-        float radius = start.magnitude;
-
-        // Current position
-        Vector3 pos = SphericalInterpolate(start.normalized, end.normalized, localT) * radius;
-        transform.position = sphereCenter + pos;
-
-        // Tangent direction (look ahead a bit)
-        float dt = 0.001f;
-        float lookT = Mathf.Clamp01(localT + dt);
-        Vector3 lookPos = SphericalInterpolate(start.normalized, end.normalized, lookT) * radius;
-        Vector3 tangent = (lookPos - pos).normalized;
-
-        // Up = radial from sphere center
-        Vector3 up = pos.normalized;
-
-        transform.rotation = Quaternion.LookRotation(tangent, up);
-    }
-
-    void PrecomputeSegmentLengths(int resolution = 20)
-    {
-        segmentLengths.Clear();
-        totalLength = 0f;
-
-        for (int i = 0; i < pathPoints.Count - 1; i++)
-        {
-            Vector3 a = pathPoints[i] - sphereCenter;
-            Vector3 b = pathPoints[i + 1] - sphereCenter;
-            float radius = a.magnitude;
-
-            float length = 0f;
-            Vector3 prev = SphericalInterpolate(a.normalized, b.normalized, 0f) * radius;
-            for (int j = 1; j <= resolution; j++)
+            normalizedTime = 1f;
+            currentKeyframeIndex++;
+            if (currentKeyframeIndex >= keyframes.Count)
             {
-                float t = j / (float)resolution;
-                Vector3 next = SphericalInterpolate(a.normalized, b.normalized, t) * radius;
-                length += Vector3.Distance(prev, next);
-                prev = next;
+                if (loopPath)
+                {
+                    currentKeyframeIndex = 0;
+                }
+                else
+                {
+                    isMoving = false;
+                    return;
+                }
             }
-
-            segmentLengths.Add(length);
-            totalLength += length;
+            segmentTime = 0f; // Reset segment time for the new segment
+            currentKeyframe = keyframes[currentKeyframeIndex];
+            nextKeyframe = keyframes[(currentKeyframeIndex + 1) % keyframes.Count];
         }
+
+        // Interpolate position
+        Vector3 startPosRelative = currentKeyframe.position - sphereCenter;
+        Vector3 endPosRelative = nextKeyframe.position - sphereCenter;
+
+        Vector3 currentPosRelative = SphericalInterpolate(startPosRelative.normalized, endPosRelative.normalized, normalizedTime) * Mathf.Lerp(startPosRelative.magnitude, endPosRelative.magnitude, normalizedTime);
+        transform.position = sphereCenter + currentPosRelative;
+
+        // Interpolate lookAtOffset
+        Vector3 currentLookAtOffset = Vector3.Lerp(currentKeyframe.lookAtOffset, nextKeyframe.lookAtOffset, normalizedTime);
+        Vector3 lookTarget = sphereCenter + currentLookAtOffset;
+
+        // Set camera rotation to look at the target
+        transform.rotation = Quaternion.LookRotation(lookTarget - transform.position, Vector3.up);
     }
 
-    Vector3 SphericalInterpolate(Vector3 a, Vector3 b, float t)
-    {
-        float dot = Mathf.Clamp(Vector3.Dot(a, b), -1f, 1f);
-        float theta = Mathf.Acos(dot) * t;
-        Vector3 relativeVec = (b - a * dot).normalized;
-        return a * Mathf.Cos(theta) + relativeVec * Mathf.Sin(theta);
+        Vector3 SphericalInterpolate(Vector3 a, Vector3 b, float t)
+
+        {
+
+            float dot = Mathf.Clamp(Vector3.Dot(a, b), -1f, 1f);
+
+            float theta = Mathf.Acos(dot) * t;
+
+            Vector3 relativeVec = (b - a * dot).normalized;
+
+            return a * Mathf.Cos(theta) + relativeVec * Mathf.Sin(theta);
+
+        }
+
     }
-}
